@@ -1,67 +1,27 @@
-hereconst express = require('express');
-const { default: makeWASocket, useMultiFileAuthState, fetchLatestBaileysVersion, makeCacheableSignalKeyStore } = require('@whiskeysockets/baileys');
-const pino = require('pino');
+// 🔗 PAIR SITE FOR RENDER
+const express = require('express');
 const app = express();
-app.use(express.json());
+const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
   res.send(`
-  <html>
-  <head><title>Legendary Takunda Munyoro - Pair</title>
-  <style>
-    body{font-family:Arial;background:#111;color:gold;text-align:center;padding:40px}
-    .box{background:#222;padding:30px;border-radius:15px;max-width:400px;margin:auto;border:2px solid gold}
-    input{padding:12px;width:80%;border-radius:8px;border:none;margin:10px}
-    button{padding:12px 25px;background:gold;color:black;border:none;border-radius:8px;font-weight:bold;cursor:pointer}
-  </style>
-  </head>
-  <body>
-    <div class="box">
-      <h1>👑 Legendary Takunda Munyoro</h1>
-      <p>Enter WhatsApp Number with Country Code</p>
-      <input id="num" placeholder="2637XXXXXXX" />
-      <br/>
-      <button onclick="getCode()">Get Pair Code</button>
-      <h2 id="code" style="margin-top:20px;color:white"></h2>
-      <p style="font-size:12px;color:#aaa">Created by Takunda Charles | Zimbabwe 🇿🇼</p>
-    </div>
-    <script>
-      async function getCode(){
-        const n=document.getElementById('num').value;
-        if(!n) return alert('Enter number');
-        document.getElementById('code').innerText='Generating...';
-        const res=await fetch('/code?number='+n);
-        const data=await res.json();
-        document.getElementById('code').innerText=data.code || data.error;
-      }
-    </script>
-  </body>
-  </html>
+    <html>
+    <head><title>Legendary Takunda Munyoro</title></head>
+    <body style="background:#000;color:#fff;text-align:center;font-family:Arial;padding:50px">
+      <h1>👑 LEGENDARY TAKUNDA MUNYORO</h1>
+      <h2>🇿🇼 Made in Zimbabwe by Takunda Charles</h2>
+      <p>Bot is Running! ✅</p>
+      <p>Pair Site: https://legendary-takunda-munyoro.onrender.com</p>
+      <p>Commands: .menu .zvirahwe .play .love .prayer</p>
+      <hr>
+      <p>Go to /pair to get pair code</p>
+    </body>
+    </html>
   `);
 });
 
-app.get('/code', async (req, res) => {
-  try {
-    let num = req.query.number.replace(/[^0-9]/g, '');
-    if (!num) return res.json({ error: 'Enter valid number' });
-    const { state, saveCreds } = await useMultiFileAuthState('./auth');
-    const { version } = await fetchLatestBaileysVersion();
-    const sock = makeWASocket({
-      version,
-      logger: pino({ level: 'silent' }),
-      auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' })) },
-      printQRInTerminal: false,
-      browser: ['Legendary Bot', 'Chrome', '1.0']
-    });
-    sock.ev.on('creds.update', saveCreds);
-    if (!sock.authState.creds.registered) {
-      await new Promise(r => setTimeout(r, 2000));
-      let code = await sock.requestPairingCode(num);
-      res.json({ code: code });
-    }
-  } catch (e) {
-    res.json({ error: 'Failed: ' + e.message });
-  }
+app.get('/pair', (req, res) => {
+  res.send('<h1>Pair Code coming soon - Bot starting...</h1>');
 });
 
-app.listen(3000, () => console.log('Legendary Pair Site Running on 3000'));
+app.listen(PORT, () => console.log(`✅ Pair site running on ${PORT}`));
